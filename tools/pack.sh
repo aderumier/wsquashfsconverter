@@ -5,7 +5,7 @@ G="$1"; E="$2"; N="$3"; W="$P/$G.wine"; F="$P/$G.wsquashfs"
 set -e
 [[ -d "$W/game" && -f "$W/autorun.cmd" ]] || { echo "bad $W"; exit 1; }
 mountpoint -q $P/.wineconvert/ov0/mnt && { echo "overlay still mounted"; exit 1; }
-find "$W/dosdevices" -mindepth 1 -maxdepth 1 ! -name 'c:' ! -name 'z:' -exec rm -f {} +
+find "$W/dosdevices" -mindepth 1 -maxdepth 1 ! -name 'c:' ! -name 'z:' ! -name 'w:' -exec rm -f {} +
 find "$W/drive_c/windows/system32" "$W/drive_c/windows/syswow64" -maxdepth 1 -type l -delete
 [[ -e "$F" ]] && { echo "$F exists"; exit 1; }
 nice -n 19 ionice -c3 mksquashfs "$W" "$F" -comp zstd -quiet -no-progress -processors 8
