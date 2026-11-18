@@ -25,7 +25,6 @@ Don't edit `tools/run.sh` while slots are running.
 - Video bugs that are GE-Proton bugs (winedmo / Media Foundation) are fixed in `~/code/protonge` on a new branch for an upstream PR, never worked around in the game.
 - Keyboard/mouse-only games get a `<Game>.wsquashfs.keys` evmapy file next to the image (templates: `keyboard.keys`, `mouse.keys`).
 - Keep token use low: review the small contact sheets, not full screenshots; filter logs.
-- Don't bypass DRM: games that need the Steam client, ship cracks/Steam emulators that fail, or are Xbox GDK builds are deferred with a note, not patched.
 - Commits: author `Alexandre Derumier <aderumier@gmail.com>`, no Co-Authored-By trailer.
 
 ## Prefix tricks
@@ -50,4 +49,4 @@ Don't edit `tools/run.sh` while slots are running.
 ## Known open groups (todo.tsv)
 
 WEBVIEW2 runtime, chromium-black (NW.js/Electron), black screen with audio, input ignored, VIDEO (MF `0xc00d36bb`),
-TRICK (physx, openal, d3dcompiler_47), Steam DRM / cracks / GDK (leave alone).
+TRICK (physx, openal, d3dcompiler_47), Steam DRM / cracks / Steam emulators / GDK (now allowed to work on).

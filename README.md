@@ -95,7 +95,7 @@ WDEBUG="err+all,+loaddll" K=1 ./run.sh "<game>" 30  # raw run with a custom WINE
 - input group: menus that ignore pad, Enter and centre clicks.
 - VIDEO GROUP: Media Foundation errors (`0xc00d36bb`). If GE-Proton is at fault, fix it in `~/code/protonge` on a new branch for an upstream PR.
 - TRICK: winetricks needs (`physx`, `openal`, `d3dcompiler_47`).
-- Steam DRM / cracks / Xbox GDK builds: left alone on purpose.
+- Steam DRM / cracks / Steam emulators / Xbox GDK builds: open group, can be worked on.
 
 ## Pitfalls found
 
