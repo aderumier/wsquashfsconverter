@@ -8,7 +8,7 @@ mountpoint -q $P/.wineconvert/ov0/mnt && { echo "overlay still mounted"; exit 1;
 find "$W/dosdevices" -mindepth 1 -maxdepth 1 ! -name 'c:' ! -name 'z:' -exec rm -f {} +
 find "$W/drive_c/windows/system32" "$W/drive_c/windows/syswow64" -maxdepth 1 -type l -delete
 [[ -e "$F" ]] && { echo "$F exists"; exit 1; }
-mksquashfs "$W" "$F" -comp zstd -quiet -no-progress
+nice -n 19 ionice -c3 mksquashfs "$W" "$F" -comp zstd -quiet -no-progress -processors 8
 unsquashfs -l "$F" | grep -q "squashfs-root/autorun.cmd" || { echo "verify failed"; rm -f "$F"; exit 1; }
 n1=$(find "$W" | wc -l); n2=$(($(unsquashfs -l "$F" | grep -c '^squashfs-root')))
 [[ $n1 -eq $n2 ]] || { echo "count mismatch $n1 $n2"; rm -f "$F"; exit 1; }
