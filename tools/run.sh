@@ -69,11 +69,11 @@ export WINEDLLOVERRIDES="winemenubuilder.exe=;$OVR;nvapi64,nvapi=${FULLOVR:+;$FU
 export PULSE_SINK=$SINK
 export LD_LIBRARY_PATH="/usr/lib32:$R/lib/wine/i386-unix:/usr/lib:$R/lib/wine/x86_64-unix:$R/lib/x86_64-linux-gnu:$R/lib/i386-linux-gnu"
 export WINEDLLPATH="$R/lib/wine/i386-windows:$R/lib/wine/x86_64-windows" PATH="$R/bin:\$PATH" WINEDISABLEFASTSYNC=0 LC_ALL=en_US.UTF-8 LANGUAGE=en_US VKD3D_DEBUG=none
-$AENV "$WINE" $CMD
+$AENV ${EXTRAENV} "$WINE" $CMD
 "$WINESERVER" -w
 EOS
 ( gamescope --backend headless -W ${WW:-1280} -H ${WH:-720} -w ${WW:-1280} -h ${WH:-720} -- \
-    bwrap --dev-bind / / --tmpfs /dev/input --dev-bind "$EV" "$EV" --tmpfs /run/udev \
+    bwrap --dev-bind / / --tmpfs /dev/input --dev-bind "$EV" "$EV" $( [[ "${UDEV:-0}" = 1 ]] || echo --tmpfs /run/udev ) \
     bash $O/launch.sh > $LOG 2>&1 ) &
 GSPID=$!
 parec -d $SINK.monitor --format=s16le --rate=8000 --channels=1 --raw > $O/audio.raw 2>/dev/null &

@@ -40,6 +40,30 @@ key Return
 sleep 2000
 key space
 sleep 2000
+key Down
+sleep 800
+key Return
+sleep 2500
+key s
+sleep 800
+key Return
+sleep 2500
+key z
+sleep 2500
+key Down
+sleep 800
+key z
+sleep 2500
+key x
+sleep 1500
+key Up
+sleep 800
+key Return
+sleep 2500
+key w
+sleep 800
+key space
+sleep 2500
 click 640 360
 sleep 2500
 click 640 400
