@@ -39,6 +39,7 @@ Don't edit `tools/run.sh` while slots are running.
 - Console-subsystem exe crashing on console calls, `.bat` entries, missing fonts, exe/data-folder name mismatch: see README "Fixes".
 - Black screen with audio on a 32-bit (PE32) game, on DXVK and wined3d alike → `ENV=WINEARCH=wow64` in `autorun.cmd` (GE's old i386 path through host lib32 GL/Vulkan stays black; WoW64 renders). Check this first for the black group.
 - Game exits/hangs on Steam (SteamAPI_Init failed, bundled Steam emulator, cracked steam_api 'No access to memory location') → `ENV=WINEDLLOVERRIDES="winemenubuilder.exe=;dxgi,d3d8,d3d9,d3d10core,d3d11,d3d12,d3d12core=n;nvapi64,nvapi=;lsteamclient=d"` (GE's Steam bridge; Proton sets the same without Steam). Fixed 12 games.
+- Game needs the Steam client even with `lsteamclient=d` → Goldberg (gbe_fork, `~/.cache/wsquashfsconverter/gbe`): replace `steam_api(64).dll` (keep `.orig`), add `steam_appid.txt` and a `steam_interfaces.txt` listing the interface strings of the original dll (`strings | grep -E '^(Steam[A-Za-z]+[0-9]{3}|STEAM[A-Z_]+_VERSION[0-9]{3})$'`). Fixed Amabilly.
 - Unity resolution dialog / "Full screen?" box at start → `.keys` with Start→KEY_ENTER.
 
 ## Comparing runners / prefixes
