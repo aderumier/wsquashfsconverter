@@ -7,7 +7,7 @@ Read `README.md` for the tools; this file holds the working rules.
 ## Workflow
 
 1. `tools/setup.sh` (set `WC_PACK` if the tools are not in `<pack>/.wineconvert/tools`).
-2. `tools/batch.sh 16` (fewer slots if RAM < 32 GB; check `free -g` after a round).
+2. `tools/batch.sh 8`, then pack/defer the whole round before starting the next one. Never pack while a test round runs (it starves the games), and 16 slots were not faster.
 3. Look at `work/reviewA.jpg` / `reviewB.jpg` + the per-slot summary, then per game:
    - works (renders, audio stream open, reaches menu/gameplay, reacts to some input): `tools/pack.sh "<game>" "<entry>" "<notes>"`
    - otherwise: try a cheap fix (see below) and rerun with `K=<slot> tools/next.sh "<game>"`, or `tools/defer.sh "<game>" "<reason / group>"`
@@ -19,13 +19,18 @@ Don't edit `tools/run.sh` while slots are running.
 ## Rules from the user
 
 - One game at a time on disk is not required any more, but never leave a `.wine` folder behind: pack or defer it.
-- DOSBox and ScummVM games are not converted: move them to `<pack>/dontconvert/` (native remasters that only bundle a classic DOSBox version are converted).
+- DOSBox, ScummVM and Win95-era games are not converted: move them to `<pack>/dontconvert/` (native remasters that only bundle a classic DOSBox version are converted). A PE header of Windows 4.00 alone does not make a game Win95-era.
 - Use the GE-Proton runner from `~/code/windowsarcadeloader/wine-runners/` and DXVK by default. Try a game with no tricks first; add tricks to the prefix only when really needed.
 - Check audio for every game (`streams:` / `audio:` lines); 32-bit games need the host lib32 packages.
 - Video bugs that are GE-Proton bugs (winedmo / Media Foundation) are fixed in `~/code/protonge` on a new branch for an upstream PR, never worked around in the game.
 - Keyboard/mouse-only games get a `<Game>.wsquashfs.keys` evmapy file next to the image (templates: `keyboard.keys`, `mouse.keys`).
 - Keep token use low: review the small contact sheets, not full screenshots; filter logs.
+- Don't bypass DRM: games that need the Steam client, ship cracks/Steam emulators that fail, or are Xbox GDK builds are deferred with a note, not patched.
 - Commits: author `Alexandre Derumier <aderumier@gmail.com>`, no Co-Authored-By trailer.
+
+## Prefix tricks
+
+`tools/trick.sh "<game>" <verb>...` preps the game if needed and runs the runner's winetricks on the real `.wine` (kept in the image), e.g. `physx`, `openal`, `d3dcompiler_47`.
 
 ## Cheap fixes that worked (in the image, not the prefix)
 
@@ -33,9 +38,16 @@ Don't edit `tools/run.sh` while slots are running.
 - Launcher/config tool as gamelist entry → `CMD` = the real game exe.
 - DXVK white/black screen → `ENV=WINEDLLOVERRIDES="winemenubuilder.exe=;d3d9=b"` (or the d3d dll the game uses) in `autorun.cmd`.
 - Console-subsystem exe crashing on console calls, `.bat` entries, missing fonts, exe/data-folder name mismatch: see README "Fixes".
+- Black screen with audio on a 32-bit (PE32) game, on DXVK and wined3d alike → `ENV=WINEARCH=wow64` in `autorun.cmd` (GE's old i386 path through host lib32 GL/Vulkan stays black; WoW64 renders). Check this first for the black group.
 - Unity resolution dialog / "Full screen?" box at start → `.keys` with Start→KEY_ENTER.
+
+## Comparing runners / prefixes
+
+- `WC_RUNNER=<runner dir>` picks another runner for run.sh/fullscan.sh (vanilla wine, Kron4ek builds in `~/.cache/wsquashfsconverter/runners`).
+- `FULL=1` runs on a copy of the windowsarcadeloader full prefix (`fullprefix/`), loader-like: isolated tricks builtin (`DSOUND=1` keeps native dsound, only for sound problems), pad re-enabled.
+- `tools/fullscan.sh <list>` (OUT=file) scans a list in rounds of 8; `tools/desktop.sh "<game>"` shows a game on the real desktop for the user.
 
 ## Known open groups (todo.tsv)
 
 WEBVIEW2 runtime, chromium-black (NW.js/Electron), black screen with audio, input ignored, VIDEO (MF `0xc00d36bb`),
-TRICK (physx, openal, d3dcompiler_47).
+TRICK (physx, openal, d3dcompiler_47), Steam DRM / cracks / GDK (leave alone).

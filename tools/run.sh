@@ -7,8 +7,21 @@ O=$P/.wineconvert/ov$K; OUT=$S/shots$K; LOG=$S/run$K.log; SINK=claude_null$K
 K=$K "$T/stop.sh" >/dev/null 2>&1
 mkdir -p $O/upper $O/work $O/mnt "$OUT"; rm -f "$OUT"/*.png
 mkdir -p $O/lower; mountpoint -q $O/lower && sudo umount $O/lower
-sudo mount --bind "$W" $O/lower || { echo "audio: MOUNT FAILED"; exit 1; }
-sudo mount -t overlay overlay -o lowerdir=$O/lower,upperdir=$O/upper,workdir=$O/work,redirect_dir=on $O/mnt || { sudo umount $O/lower; echo "audio: MOUNT FAILED"; exit 1; }
+if [[ "${FULL:-0}" = 1 ]]; then
+  # test against the windowsarcadeloader "full" prefix copy: game layer on top of it, nothing written to either
+  FP=${FULLPREFIX:-$P/.wineconvert/fullprefix}
+  # overlayfs does not see mounts nested in a lower layer: link game/ to the real folder instead
+  mountpoint -q $O/glayer/game && sudo umount $O/glayer/game
+  rm -rf "${O:?}/glayer"; mkdir -p $O/glayer
+  cp "$W/autorun.cmd" $O/glayer/autorun.cmd
+  ln -s "$W/game" $O/glayer/game
+  sudo mount --bind "$FP" $O/lower || { echo "audio: MOUNT FAILED"; exit 1; }
+  LOWER=$O/glayer:$O/lower
+else
+  sudo mount --bind "$W" $O/lower || { echo "audio: MOUNT FAILED"; exit 1; }
+  LOWER=$O/lower
+fi
+sudo mount -t overlay overlay -o lowerdir=$LOWER,upperdir=$O/upper,workdir=$O/work,redirect_dir=on $O/mnt || { sudo umount $O/lower; echo "audio: MOUNT FAILED"; exit 1; }
 sudo chown $(id -u):$(id -g) $O/mnt
 PFX=$O/mnt
 S32=$PFX/drive_c/windows/system32; W64=$PFX/drive_c/windows/syswow64
@@ -26,6 +39,17 @@ else
   OVR="dxgi,d3d8,d3d9,d3d10core,d3d11,d3d12,d3d12core=n"
 fi
 ln -sf $R/lib/wine/i386-windows/ddraw.dll $W64/ddraw.dll
+FULLOVR=""
+if [[ "${FULL:-0}" = 1 ]]; then
+  # like the loader: its isolated tricks stay builtin unless asked (DSOUND=1 keeps the native dsound for sound problems),
+  # and the pad is turned back on (the loader prefix disables winebus input; its games read the I/O board instead)
+  FULLOVR="dplaysvr.exe,dplayx,dpmodemx,dpnet,dpnhpast,dpnhupnp,dpnsvr.exe,dpwsockx,jscript,scrrun,vbscript,cscript.exe,wscript.exe=b"
+  [[ "${DSOUND:-0}" = 1 ]] || FULLOVR="dsound=b;$FULLOVR"
+  for v in "Enable SDL:1" "DisableInput:0" "DisableHidraw:1"; do
+    WINEPREFIX=$PFX WINEDEBUG=-all DISPLAY= "$WINE" reg add 'HKLM\System\CurrentControlSet\Services\winebus' /v "${v%%:*}" /t REG_DWORD /d "${v##*:}" /f >/dev/null 2>&1
+  done
+  WINEPREFIX=$PFX "$WINESERVER" -w
+fi
 CMD=$(tr -d '\r' < $PFX/autorun.cmd | grep ^CMD= | sed 's/^CMD=//' | head -1)
 DIR=$(tr -d '\r' < $PFX/autorun.cmd | grep ^DIR= | sed 's/^DIR=//' | head -1)
 AENV=$(tr -d '\r' < $PFX/autorun.cmd | grep ^ENV= | sed 's/^ENV=//' | head -1)
@@ -41,7 +65,7 @@ cat > $O/launch.sh <<EOS
 cd "$PFX/$DIR" || exit 1
 export WINEPREFIX="$PFX" WINEDEBUG="${WDEBUG:-err+all}" DXVK_LOG_LEVEL=${DXVK_LOG:-none} WINE_ENABLE_HIDRAW=0 WINE_FULLSCREEN_FSR=0
 export WINE_MONO_OVERRIDES="Microsoft.Xna.Framework.*,Gac=n" WINE_ALLOW_XIM=0 DXVK_ASYNC=1 DXVK_STATE_CACHE=0 STAGING_SHARED_MEMORY=1
-export WINEDLLOVERRIDES="winemenubuilder.exe=;$OVR;nvapi64,nvapi="
+export WINEDLLOVERRIDES="winemenubuilder.exe=;$OVR;nvapi64,nvapi=${FULLOVR:+;$FULLOVR}"
 export PULSE_SINK=$SINK
 export LD_LIBRARY_PATH="/usr/lib32:$R/lib/wine/i386-unix:/usr/lib:$R/lib/wine/x86_64-unix:$R/lib/x86_64-linux-gnu:$R/lib/i386-linux-gnu"
 export WINEDLLPATH="$R/lib/wine/i386-windows:$R/lib/wine/x86_64-windows" PATH="$R/bin:\$PATH" WINEDISABLEFASTSYNC=0 LC_ALL=en_US.UTF-8 LANGUAGE=en_US VKD3D_DEBUG=none
