@@ -1,0 +1,19 @@
+sleep 20000
+key Return
+sleep 2000
+tap a 200
+sleep 2000
+key space
+sleep 2000
+tap start 200
+sleep 3000
+key Return
+sleep 3000
+tap a 200
+sleep 3000
+key Return
+sleep 3000
+tap a 200
+sleep 3000
+key Return
+sleep 60000

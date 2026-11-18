@@ -1,0 +1,57 @@
+{
+    "actions_player1": [
+        {
+            "trigger": "joystick1",
+            "type": "mouse",
+            "description": "Mouse"
+        },
+        {
+            "trigger": "a",
+            "type": "key",
+            "target": "BTN_LEFT",
+            "description": "Mouse left"
+        },
+        {
+            "trigger": "b",
+            "type": "key",
+            "target": "BTN_RIGHT",
+            "description": "Mouse right"
+        },
+        {
+            "trigger": "up",
+            "type": "key",
+            "target": "KEY_UP",
+            "description": "Up"
+        },
+        {
+            "trigger": "down",
+            "type": "key",
+            "target": "KEY_DOWN",
+            "description": "Down"
+        },
+        {
+            "trigger": "left",
+            "type": "key",
+            "target": "KEY_LEFT",
+            "description": "Left"
+        },
+        {
+            "trigger": "right",
+            "type": "key",
+            "target": "KEY_RIGHT",
+            "description": "Right"
+        },
+        {
+            "trigger": "start",
+            "type": "key",
+            "target": "KEY_ENTER",
+            "description": "Enter"
+        },
+        {
+            "trigger": "select",
+            "type": "key",
+            "target": "KEY_ESC",
+            "description": "Escape"
+        }
+    ]
+}

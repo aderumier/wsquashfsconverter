@@ -1,0 +1,28 @@
+sleep 14000
+tap start 200
+sleep 2500
+tap a 200
+sleep 2500
+tap a 200
+sleep 2500
+tap start 200
+sleep 2500
+tap a 200
+sleep 2500
+tap a 200
+sleep 3000
+tap a 200
+sleep 3000
+axis lx 32000
+sleep 2500
+tap a 300
+sleep 1000
+tap x 200
+sleep 1000
+tap b 200
+sleep 2000
+axis lx -32000
+sleep 1500
+axis lx 0
+tap x 200
+sleep 60000

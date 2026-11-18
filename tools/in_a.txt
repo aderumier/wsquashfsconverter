@@ -1,0 +1,46 @@
+sleep 12000
+click 1270 710
+sleep 3000
+tap a 250
+sleep 2500
+tap a 250
+sleep 2500
+tap a 250
+sleep 2500
+tap a 250
+sleep 2500
+tap a 250
+sleep 2500
+tap a 250
+sleep 2500
+tap a 250
+sleep 2500
+tap a 250
+sleep 2500
+tap a 250
+sleep 2500
+tap down 250
+sleep 800
+tap a 250
+sleep 2500
+axis lx 32000
+sleep 2500
+axis lx 0
+tap x 200
+sleep 1500
+key Return
+sleep 2000
+key space
+sleep 2000
+key Return
+sleep 2000
+key space
+sleep 2000
+key Return
+sleep 2000
+key space
+sleep 2000
+click 640 360
+sleep 2500
+click 640 400
+sleep 60000

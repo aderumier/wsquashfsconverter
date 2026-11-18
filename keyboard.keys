@@ -1,0 +1,105 @@
+{
+    "actions_player1": [
+        {
+            "trigger": "up",
+            "type": "key",
+            "target": "KEY_UP",
+            "description": "Up"
+        },
+        {
+            "trigger": "down",
+            "type": "key",
+            "target": "KEY_DOWN",
+            "description": "Down"
+        },
+        {
+            "trigger": "left",
+            "type": "key",
+            "target": "KEY_LEFT",
+            "description": "Left"
+        },
+        {
+            "trigger": "right",
+            "type": "key",
+            "target": "KEY_RIGHT",
+            "description": "Right"
+        },
+        {
+            "trigger": "joystick1up",
+            "type": "key",
+            "target": "KEY_UP",
+            "description": "Up"
+        },
+        {
+            "trigger": "joystick1down",
+            "type": "key",
+            "target": "KEY_DOWN",
+            "description": "Down"
+        },
+        {
+            "trigger": "joystick1left",
+            "type": "key",
+            "target": "KEY_LEFT",
+            "description": "Left"
+        },
+        {
+            "trigger": "joystick1right",
+            "type": "key",
+            "target": "KEY_RIGHT",
+            "description": "Right"
+        },
+        {
+            "trigger": "a",
+            "type": "key",
+            "target": "KEY_ENTER",
+            "description": "Enter"
+        },
+        {
+            "trigger": "b",
+            "type": "key",
+            "target": "KEY_ESC",
+            "description": "Escape"
+        },
+        {
+            "trigger": "x",
+            "type": "key",
+            "target": "KEY_SPACE",
+            "description": "Space"
+        },
+        {
+            "trigger": "y",
+            "type": "key",
+            "target": "KEY_LEFTSHIFT",
+            "description": "Shift"
+        },
+        {
+            "trigger": "start",
+            "type": "key",
+            "target": "KEY_ENTER",
+            "description": "Enter"
+        },
+        {
+            "trigger": "select",
+            "type": "key",
+            "target": "KEY_ESC",
+            "description": "Escape"
+        },
+        {
+            "trigger": "joystick2",
+            "type": "mouse",
+            "description": "Mouse"
+        },
+        {
+            "trigger": "r2",
+            "type": "key",
+            "target": "BTN_LEFT",
+            "description": "Mouse left"
+        },
+        {
+            "trigger": "l2",
+            "type": "key",
+            "target": "BTN_RIGHT",
+            "description": "Mouse right"
+        }
+    ]
+}
