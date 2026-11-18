@@ -42,6 +42,7 @@ Don't edit `tools/run.sh` while slots are running.
 - Game needs the Steam client even with `lsteamclient=d` → Goldberg (gbe_fork, `~/.cache/wsquashfsconverter/gbe`): replace `steam_api(64).dll` (keep `.orig`), add `steam_appid.txt` and a `steam_interfaces.txt` listing the interface strings of the original dll (`strings | grep -E '^(Steam[A-Za-z]+[0-9]{3}|STEAM[A-Z_]+_VERSION[0-9]{3})$'`). Fixed Amabilly.
 - SteamStub-wrapped exe ('Application load error S:...') → unwrap with Steamless CLI (`~/.cache/wsquashfsconverter/steamless`, run with the runner's wine; plugin dlls copied next to the exe for mono), keep `.orig`, then Goldberg as above and `CMD` = the unwrapped exe instead of any SmartSteamEmu launcher. Fixed VULKAISER.
 - Bundled Java (JRE 17) dies with 'jimage file name is null' on GE: its path canonicalization fails on the test path (dot folder / overlay). Give the prefix a drive `dosdevices/w: -> ..` (pack.sh keeps `w:`) and start the game as `CMD="w:\game\<launcher>.exe"` (not at the drive root: the game needs a folder name). Fixed Cosmobreeder.
+- Game crashes when a D3D9 shader fails ('E7002: Instruction "sincos" is not supported', Ogre.log) → wine's HLSL compiler; `tools/trick.sh "<game>" d3dx9_43 d3dcompiler_43` (native d3dx9 alone still uses the builtin compiler). Fixed Verisim Skies.
 - Unity resolution dialog / "Full screen?" box at start → `.keys` with Start→KEY_ENTER.
 
 ## Comparing runners / prefixes
