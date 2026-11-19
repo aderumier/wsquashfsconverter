@@ -36,7 +36,7 @@ export WINE_MONO_OVERRIDES="Microsoft.Xna.Framework.*,Gac=n" WINE_ALLOW_XIM=0 DX
 export WINEDLLOVERRIDES="winemenubuilder.exe=;$OVR;nvapi64,nvapi="
 export LD_LIBRARY_PATH="/usr/lib32:$R/lib/wine/i386-unix:/usr/lib:$R/lib/wine/x86_64-unix:$R/lib/x86_64-linux-gnu:$R/lib/i386-linux-gnu"
 export WINEDLLPATH="$R/lib/wine/i386-windows:$R/lib/wine/x86_64-windows" PATH="$R/bin:\$PATH" WINEDISABLEFASTSYNC=0 LC_ALL=en_US.UTF-8 LANGUAGE=en_US VKD3D_DEBUG=none
-$AENV "$WINE" $CMD
+$AENV ${WRAP} "$WINE" $CMD
 "$WINESERVER" -w
 EOS
 echo "launching $G on $DISPLAY for ${DUR}s"
