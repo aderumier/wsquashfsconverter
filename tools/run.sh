@@ -73,7 +73,7 @@ $AENV ${EXTRAENV} "$WINE" $CMD
 "$WINESERVER" -w
 EOS
 ( gamescope --backend headless -W ${WW:-1280} -H ${WH:-720} -w ${WW:-1280} -h ${WH:-720} -- \
-    bwrap --dev-bind / / --tmpfs /dev/input --dev-bind "$EV" "$EV" $( [[ "${UDEV:-0}" = 1 ]] || echo --tmpfs /run/udev ) \
+    bwrap --dev-bind / / --tmpfs /dev/input $( [[ "${NOCAM:-0}" = 1 ]] && for v in /dev/video*; do [[ -c $v ]] && echo --ro-bind /dev/null $v; done ) --dev-bind "$EV" "$EV" $( [[ "${UDEV:-0}" = 1 ]] || echo --tmpfs /run/udev ) \
     bash $O/launch.sh > $LOG 2>&1 ) &
 GSPID=$!
 parec -d $SINK.monitor --format=s16le --rate=8000 --channels=1 --raw > $O/audio.raw 2>/dev/null &
@@ -100,7 +100,7 @@ while (( t < DUR )); do
   if (( t == 30 )); then sid=$(pactl list short sinks | awk -v n=$SINK '$2==n{print $1}'); echo "streams: $(pactl list short sink-inputs | awk -v s=$sid '$2==s' | wc -l)"; fi
   kill -0 $GSPID 2>/dev/null || { echo "exited at $t"; break; }
 done
-rm -rf "${O:?}/glogs"; mkdir -p $O/glogs; find $O/upper \( -iname "*.log" -o -iname "*log*.txt" \) -size -5M -exec cp {} $O/glogs/ \; 2>/dev/null
+rm -rf "${O:?}/glogs"; mkdir -p $O/glogs; find $O/upper \( -iname "*.log" -o -iname "*log*.txt" -o -iname "${GLOGX:-__none__}" \) -size -5M -exec cp {} $O/glogs/ \; 2>/dev/null
 exec 7>&-
 K=$K "$T/stop.sh"
 echo "audio: $(python3 -I $T/audio.py $O/audio.raw)"

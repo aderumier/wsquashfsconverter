@@ -7,7 +7,7 @@ X="$P/.wineconvert/rp/$(basename "$RN")/$G.wine"
 [[ -d "$SRC/game" ]] || { echo "no $SRC/game" >&2; exit 1; }
 if [[ ! -f "$X/system.reg" ]]; then
   mkdir -p "$X"
-  WINEPREFIX="$X" WINEDEBUG=-all DISPLAY= WINEDLLOVERRIDES="mscoree,mshtml=;winemenubuilder.exe=" "$RN/bin/wineboot" -u >/dev/null 2>&1
+  WINEPREFIX="$X" WINEDEBUG=-all DISPLAY= WINEDLLOVERRIDES="mscoree,mshtml=;winemenubuilder.exe=" "$RN/bin/wine" wineboot -u >/dev/null 2>&1
   WINEPREFIX="$X" "$RN/bin/wineserver" -w
 fi
 ln -sfn "$SRC/game" "$X/game"

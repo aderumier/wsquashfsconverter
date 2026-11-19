@@ -54,6 +54,8 @@ Don't edit `tools/run.sh` while slots are running.
 - Unity game 'black' headless but fine for the user: check `magick ... -auto-level` before calling it black (very dark first screens). Bloodecay.
 - Wrong gamelist entry (level editor, mod menu) → `CMD` = the real game exe (Mayhem Triple: Mayhem3Steam.exe).
 - Game aborting in win32u 'alloc_user_handle: Assertion index < MAX_USER_HANDLES' → find the leaked user object type with `WINEDEBUG=+server` (alloc_user_handle type); TriggerHeart's LoadAccelerators leak is fixed in protonge branch user32-loadaccelerators-cache.
+- Xbox GDK build (MicrosoftGame.config, gamelaunchhelper.exe) shipping a GDK emulator (`ms_emu.json` + proxy `winmm.dll`, maybe `xgameruntime.dll`) → `ENV=...;winmm,xgameruntime=n,b` so the proxy loads instead of wine's builtin winmm. Any proxy dll next to the exe needs `=n,b`. Fixed MIO, REPLACED.
+- Config-file fixes keep paths relative to the game folder (Dusk `backend.isoPath`, Simpsons `--game_data_root=gamedata`); N64Recomp ports want the ROM as `AppData/Local/<Game>Recompiled/<id>.z64` (byteswap .v64 with `dd conv=swab`).
 - Unity resolution dialog / "Full screen?" box at start → `.keys` with Start→KEY_ENTER.
 
 ## Comparing runners / prefixes
