@@ -49,6 +49,11 @@ Don't edit `tools/run.sh` while slots are running.
 - Old Ageia PhysX 2.x game ('Ageia PhysX failed') when winetricks physx isn't enough → install the PhysX System Software the game ships (`Support/PhysX/*.exe /s /v"/qn"` with the runner's wine on the real prefix). Fixed Lost Via Domus.
 - 32-bit DirectDraw game with a gray window → `ENV=WINEARCH=wow64`; if a mod loader (JJ2+) is in the way, `CMD` = the unmodded exe. Fixed Jazz Jackrabbit 2.
 - SDL game ignoring the pad because its config has the buttons at -1 → `.keys` mapping the pad to its keyboard keys (Cannonball DX).
+- Console exe failing on console calls without a tty ('Incorrect access to Shell-no-window console', .NET Console.set_Title IOException 'Invalid access') → `CMD=start /wait <exe>` gives it a real console. Fixed Absolum.
+- D3D9 effects fail ('no effect compiler', 'E5033: Unknown target profile fx_2_0', black/solid 3D with HUD drawn) → native compiler matching the game's d3dx9 (`trick.sh "<game>" d3dcompiler_42` for d3dx9_42). Fixed Rigid Force Alpha.
+- Unity game 'black' headless but fine for the user: check `magick ... -auto-level` before calling it black (very dark first screens). Bloodecay.
+- Wrong gamelist entry (level editor, mod menu) → `CMD` = the real game exe (Mayhem Triple: Mayhem3Steam.exe).
+- Game aborting in win32u 'alloc_user_handle: Assertion index < MAX_USER_HANDLES' → find the leaked user object type with `WINEDEBUG=+server` (alloc_user_handle type); TriggerHeart's LoadAccelerators leak is fixed in protonge branch user32-loadaccelerators-cache.
 - Unity resolution dialog / "Full screen?" box at start → `.keys` with Start→KEY_ENTER.
 
 ## Comparing runners / prefixes
@@ -57,6 +62,7 @@ Don't edit `tools/run.sh` while slots are running.
 - `FULL=1` runs on a copy of the windowsarcadeloader full prefix (`fullprefix/`), loader-like: isolated tricks builtin (`DSOUND=1` keeps native dsound, only for sound problems), pad re-enabled.
 - A vanilla runner updates the prefix first (30 s+): run it 150 s. D3D12 games only run on vkd3d-proton (GE).
 - `tools/bisect.sh` bisects the wine-staging patch sets against a game that works on vanilla (found `dcomp-DCompositionCreateDevice2` for the Chromium games; GE has a second Proton-side cause, no Chromium GPU process).
+- Use a separate prefix made with the other runner for runner comparisons (WC_RUNNER on the GE prefix makes it update/downgrade the prefix and the result is meaningless).
 - `tools/fullscan.sh <list>` (OUT=file) scans a list in rounds of 8; `tools/desktop.sh "<game>"` shows a game on the real desktop for the user.
 
 ## Known open groups (todo.tsv)
