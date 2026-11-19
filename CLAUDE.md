@@ -61,6 +61,8 @@ Don't edit `tools/run.sh` while slots are running.
 - Game crashes on COM from a worker thread that never called CoInitialize ('apartment not initialised', null deref): Windows usually has an implicit MTA, wine doesn't. Drop `tools/mta_proxy/SensApi.dll` (or rebuild the source as another small dll the exe imports) into `game/` with `ENV=...;sensapi=n`: it keeps an MTA thread alive. Fixed Arcade Classics.
 - 32-bit D3D9 game crashing on a null COM call at vtbl+0x11c (ID3DXEffect) → effect compile failed in builtin d3dx9: `trick.sh "<game>" d3dx9 d3dcompiler_43 d3dcompiler_47`. Fixed Ms. Splosion Man.
 - Unity IL2CPP exception in game code: rea `inspect_il2cpp_metadata` (with GameAssembly.dll) maps method names <-> addresses; objdump the method (Ghidra times out on 50 MB GameAssembly) and read the live values with gdb (rebased). Bye Sweet Carole: AC default language -1 -> patched GenerateDefaultOptionsData to English (keep `.orig`).
+- Defold game exiting with code 1 and no output: release builds keep their log silent; read it with gdb on the engine's dmLog (format string in r8, first arg in r9). Tameshi: 'Could not find gl function glGenPrograms' (Mesa core profile lacks ARB_vertex_program) -> `ENV=MESA_GL_VERSION_OVERRIDE=4.6COMPAT ...`.
+- Another session may run its own headless gamescope (windowsarcadeloader tests): if a slot's screenshots show a foreign game, its display number collides; rerun in another slot.
 - Unity resolution dialog / "Full screen?" box at start → `.keys` with Start→KEY_ENTER.
 
 ## Comparing runners / prefixes
