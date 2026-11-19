@@ -62,7 +62,8 @@ Don't edit `tools/run.sh` while slots are running.
 - `FULL=1` runs on a copy of the windowsarcadeloader full prefix (`fullprefix/`), loader-like: isolated tricks builtin (`DSOUND=1` keeps native dsound, only for sound problems), pad re-enabled.
 - A vanilla runner updates the prefix first (30 s+): run it 150 s. D3D12 games only run on vkd3d-proton (GE).
 - `tools/bisect.sh` bisects the wine-staging patch sets against a game that works on vanilla (found `dcomp-DCompositionCreateDevice2` for the Chromium games; GE has a second Proton-side cause, no Chromium GPU process).
-- Use a separate prefix made with the other runner for runner comparisons (WC_RUNNER on the GE prefix makes it update/downgrade the prefix and the result is meaningless).
+- Use a separate prefix made with the other runner for runner comparisons (WC_RUNNER on the GE prefix makes it update/downgrade the prefix and the result is meaningless): `X=$(tools/runnerpfx.sh "<game>" <runner>)`, then `WC_RUNNER=<runner> WC_WINEPFX="$X" tools/run.sh "<game>" ...` (also desktop.sh). Delete `.wineconvert/rp/` after.
+- Input: when the pad doesn't move a screen, run `tools/in_kbd.txt` (Enter, Space, Z/X/C, 5, 1, S, A, Esc, arrows) before asking the user.
 - `tools/fullscan.sh <list>` (OUT=file) scans a list in rounds of 8; `tools/desktop.sh "<game>"` shows a game on the real desktop for the user.
 
 ## Known open groups (todo.tsv)

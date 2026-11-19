@@ -2,7 +2,7 @@
 # run.sh "<game>" <seconds> [inputfile]: batocera-like launch on an overlay of <game>.wine in slot $K (default 0),
 # headless gamescope, own virtual pad only (bwrap), own null sink, screenshots every 5s
 . "$(dirname "$0")/env.sh"
-G="$1"; DUR=${2:-60}; IN="$3"; W="$P/$G.wine"; K=${K:-0}
+G="$1"; DUR=${2:-60}; IN="$3"; W="${WC_WINEPFX:-$P/$G.wine}"; K=${K:-0}
 O=$P/.wineconvert/ov$K; OUT=$S/shots$K; LOG=$S/run$K.log; SINK=claude_null$K
 K=$K "$T/stop.sh" >/dev/null 2>&1
 mkdir -p $O/upper $O/work $O/mnt "$OUT"; rm -f "$OUT"/*.png

@@ -2,7 +2,7 @@
 # desktop.sh "<game>" [seconds]: run the game on the real desktop (DISPLAY), batocera-like env, overlay so nothing is written
 # to the image; for a human to look at it. Slot $K (default 20). NODXVK=1 for wined3d.
 . "$(dirname "$0")/env.sh"
-G="$1"; DUR=${2:-120}; K=${K:-20}; W="$P/$G.wine"; O=$P/.wineconvert/ov$K
+G="$1"; DUR=${2:-120}; K=${K:-20}; W="${WC_WINEPFX:-$P/$G.wine}"; O=$P/.wineconvert/ov$K
 if [[ ! -d "$W" ]]; then
   E=$(grep -F "|$G|" $S/games.txt | head -1 | cut -d'|' -f4 | sed 's/ ; /\n/g' | grep -viE 'unins|redist|crash|\.url$|\.bat$|setup' | head -1)
   "$T/prep.sh" "$G" "$E" >/dev/null || exit 1
