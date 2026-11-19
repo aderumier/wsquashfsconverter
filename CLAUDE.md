@@ -58,6 +58,9 @@ Don't edit `tools/run.sh` while slots are running.
 - Config-file fixes keep paths relative to the game folder (Dusk `backend.isoPath`, Simpsons `--game_data_root=gamedata`); N64Recomp ports want the ROM as `AppData/Local/<Game>Recompiled/<id>.z64` (byteswap .v64 with `dd conv=swab`).
 - Black screen with audio and an invisible (unmapped) window, even on the desktop: check for `CreateWindowExW` followed by `if (GetLastError()==0)` (wine leaves a stale last error, so ShowWindow and the render size are skipped -> 0x0 viewport). `tools/gle_patch.py <exe> patch` (keep `.orig`) NOPs the jne. Fixed Mechstermination Force and Super Punch Patrol (Hugecalf Skrot engine; also black on some Windows setups).
 - Debugging live: GE relocates exes (base from `WINEDEBUG=+loaddll` 'Loaded ... at'), so rebase static addresses before gdb breakpoints; gdb attach needs `kernel.yama.ptrace_scope=0`.
+- Game crashes on COM from a worker thread that never called CoInitialize ('apartment not initialised', null deref): Windows usually has an implicit MTA, wine doesn't. Drop `tools/mta_proxy/SensApi.dll` (or rebuild the source as another small dll the exe imports) into `game/` with `ENV=...;sensapi=n`: it keeps an MTA thread alive. Fixed Arcade Classics.
+- 32-bit D3D9 game crashing on a null COM call at vtbl+0x11c (ID3DXEffect) → effect compile failed in builtin d3dx9: `trick.sh "<game>" d3dx9 d3dcompiler_43 d3dcompiler_47`. Fixed Ms. Splosion Man.
+- Unity IL2CPP exception in game code: rea `inspect_il2cpp_metadata` (with GameAssembly.dll) maps method names <-> addresses; objdump the method (Ghidra times out on 50 MB GameAssembly) and read the live values with gdb (rebased). Bye Sweet Carole: AC default language -1 -> patched GenerateDefaultOptionsData to English (keep `.orig`).
 - Unity resolution dialog / "Full screen?" box at start → `.keys` with Start→KEY_ENTER.
 
 ## Comparing runners / prefixes

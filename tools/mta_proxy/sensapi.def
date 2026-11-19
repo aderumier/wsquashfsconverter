@@ -1,0 +1,5 @@
+LIBRARY SensApi.dll
+EXPORTS
+IsNetworkAlive
+IsDestinationReachableA
+IsDestinationReachableW
