@@ -43,12 +43,15 @@ Don't edit `tools/run.sh` while slots are running.
 - SteamStub-wrapped exe ('Application load error S:...') → unwrap with Steamless CLI (`~/.cache/wsquashfsconverter/steamless`, run with the runner's wine; plugin dlls copied next to the exe for mono), keep `.orig`, then Goldberg as above and `CMD` = the unwrapped exe instead of any SmartSteamEmu launcher. Fixed VULKAISER.
 - Bundled Java (JRE 17) dies with 'jimage file name is null' on GE: its path canonicalization fails on the test path (dot folder / overlay). Give the prefix a drive `dosdevices/w: -> ..` (pack.sh keeps `w:`) and start the game as `CMD="w:\game\<launcher>.exe"` (not at the drive root: the game needs a folder name). Fixed Cosmobreeder.
 - Game crashes when a D3D9 shader fails ('E7002: Instruction "sincos" is not supported', Ogre.log) → wine's HLSL compiler; `tools/trick.sh "<game>" d3dx9_43 d3dcompiler_43` (native d3dx9 alone still uses the builtin compiler). Fixed Verisim Skies.
+- 'Error compiling shaders' box on a D3D12 game (Mechstermination Force) → the prefix had wine's builtin `d3dcompiler_47`; `tools/trick.sh "<game>" d3dcompiler_47` and check `user.reg` has `"*d3dcompiler_47"="native"`.
 - Unity resolution dialog / "Full screen?" box at start → `.keys` with Start→KEY_ENTER.
 
 ## Comparing runners / prefixes
 
 - `WC_RUNNER=<runner dir>` picks another runner for run.sh/fullscan.sh (vanilla wine, Kron4ek builds in `~/.cache/wsquashfsconverter/runners`).
 - `FULL=1` runs on a copy of the windowsarcadeloader full prefix (`fullprefix/`), loader-like: isolated tricks builtin (`DSOUND=1` keeps native dsound, only for sound problems), pad re-enabled.
+- A vanilla runner updates the prefix first (30 s+): run it 150 s. D3D12 games only run on vkd3d-proton (GE).
+- `tools/bisect.sh` bisects the wine-staging patch sets against a game that works on vanilla (found `dcomp-DCompositionCreateDevice2` for the Chromium games; GE has a second Proton-side cause, no Chromium GPU process).
 - `tools/fullscan.sh <list>` (OUT=file) scans a list in rounds of 8; `tools/desktop.sh "<game>"` shows a game on the real desktop for the user.
 
 ## Known open groups (todo.tsv)

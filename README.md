@@ -76,6 +76,8 @@ WDEBUG="err+all,+loaddll" K=1 ./run.sh "<game>" 30  # raw run with a custom WINE
 - `run.sh` bind-mounts `X.wine` and mounts an overlay on top, so test writes never reach the image. It sets up the prefix like batocera does: DXVK/vkd3d-proton symlinks and overrides, the runner FFmpeg in `LD_LIBRARY_PATH`, a US locale, and `wineserver -w`. It then starts gamescope headless and a uinput Xbox 360 pad (`vpad`). bubblewrap gives the game only its own pad node, so slots don't see each other's pads. Audio goes to the null sink `claude_null<K>`. It takes a screenshot every 5 s and copies the game's own logs to `ov<K>/glogs/`.
 - Input scripts (`in_*.txt`) are read one line at a time. `sleep MS`, `tap a|b|x|y|start|back|lb|rb|up|down|left|right [MS]`, `btn NAME 0|1` and `axis lx|ly|rx|ry|lt|rt VALUE` go to the pad. `key NAME`, `click X Y` and `move X Y` go through xdotool at 1280x720. `in_a.txt` is the default: pad presses first, then Enter/Space, then mouse clicks.
 - `stop.sh` kills slot K and unmounts it.
+- `fullscan.sh <list>` scans a list of games in rounds of 8 (brightness, audio, exit time; `OUT=` file), e.g. with `WC_RUNNER=` to compare runners. `desktop.sh "<game>"` shows a game on the real desktop for a human check.
+- `bisect.sh` builds vanilla wine plus a growing prefix of the enabled wine-staging patch sets (`patchinstall.py`) and bisects which set breaks a game that runs on vanilla (audio as the pass test). Sources in `$B/src` (wine git) and `$B/stg` (wine-staging), log in `$B/bisect.log`.
 - `pack.sh` removes host-specific `dosdevices` entries and the runner symlinks from `system32`/`syswow64`, which batocera recreates. It then runs `mksquashfs -comp zstd` and checks the file count before deleting the folder.
 
 ## Fixes that live in the image (no prefix tricks needed)
@@ -90,7 +92,7 @@ WDEBUG="err+all,+loaddll" K=1 ./run.sh "<game>" 30  # raw run with a custom WINE
 ## todo.tsv groups (open work)
 
 - WEBVIEW2: needs the Edge WebView2 runtime.
-- chromium-black: NW.js/Electron games, black or exit; `--no-sandbox` / `--in-process-gpu` / `--disable-gpu` did not help.
+- chromium-black: NW.js/Electron games, black or exit; `--no-sandbox` / `--in-process-gpu` / `--disable-gpu` did not help. They run on vanilla wine 11.22. `bisect.sh` found the wine-staging set `dcomp-DCompositionCreateDevice2` breaks them (vanilla + all staging minus that set works). GE has a second, Proton-side cause: Chromium starts only its crashpad handler, no GPU process, and `dcomp=d` or a vanilla `dcomp.dll` don't help.
 - black group: black screen with working audio; investigate as one class.
 - input group: menus that ignore pad, Enter and centre clicks.
 - VIDEO GROUP: Media Foundation errors (`0xc00d36bb`). If GE-Proton is at fault, fix it in `~/code/protonge` on a new branch for an upstream PR.
@@ -103,4 +105,6 @@ WDEBUG="err+all,+loaddll" K=1 ./run.sh "<game>" 30  # raw run with a custom WINE
 - Overlayfs `lowerdir=` breaks on commas in the path; run.sh bind-mounts first.
 - Launchers that start a child process and exit: wait on `wineserver -w`, like batocera.
 - Don't `pgrep -f` for a pattern that also appears in your own command line.
+- With `WC_RUNNER=` a vanilla wine updates the GE prefix first ("The Wine configuration … is being updated"), which eats 30 s+ of a 60 s run; use 150 s.
+- D3D12 games (vanilla wine: "Could not create a DirectX 12.1 device") need vkd3d-proton, so compare them on GE only.
 - Editing `run.sh` while slots are running breaks those runs; bash reads the script as it goes.
