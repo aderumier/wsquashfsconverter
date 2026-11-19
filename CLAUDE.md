@@ -44,6 +44,11 @@ Don't edit `tools/run.sh` while slots are running.
 - Bundled Java (JRE 17) dies with 'jimage file name is null' on GE: its path canonicalization fails on the test path (dot folder / overlay). Give the prefix a drive `dosdevices/w: -> ..` (pack.sh keeps `w:`) and start the game as `CMD="w:\game\<launcher>.exe"` (not at the drive root: the game needs a folder name). Fixed Cosmobreeder.
 - Game crashes when a D3D9 shader fails ('E7002: Instruction "sincos" is not supported', Ogre.log) → wine's HLSL compiler; `tools/trick.sh "<game>" d3dx9_43 d3dcompiler_43` (native d3dx9 alone still uses the builtin compiler). Fixed Verisim Skies.
 - 'Error compiling shaders' box on a D3D12 game (Mechstermination Force) → the prefix had wine's builtin `d3dcompiler_47`; `tools/trick.sh "<game>" d3dcompiler_47` and check `user.reg` has `"*d3dcompiler_47"="native"`.
+- 'unimplemented function msvcp140_atomic_wait.dll.__std_atomic_wait_get_deadline' → winetricks vcrun2022 fails on GE (vc_redist status 2); `cabextract` the x64/x86 dll from `~/.cache/winetricks/vcrun2022/vc_redist.*.exe` (cabs a11/a12) into system32/syswow64 (the override is already native,builtin). Fixed Cannonball DX.
+- SDL 'Could not initialize OpenGL / GLES library' on a game without ANGLE dlls → add `libEGL.dll` + `libGLESv2.dll` (+ their `zlib1.dll`) to `game/` (copy from Cannonball DX). Fixed Moon Child FE.
+- Old Ageia PhysX 2.x game ('Ageia PhysX failed') when winetricks physx isn't enough → install the PhysX System Software the game ships (`Support/PhysX/*.exe /s /v"/qn"` with the runner's wine on the real prefix). Fixed Lost Via Domus.
+- 32-bit DirectDraw game with a gray window → `ENV=WINEARCH=wow64`; if a mod loader (JJ2+) is in the way, `CMD` = the unmodded exe. Fixed Jazz Jackrabbit 2.
+- SDL game ignoring the pad because its config has the buttons at -1 → `.keys` mapping the pad to its keyboard keys (Cannonball DX).
 - Unity resolution dialog / "Full screen?" box at start → `.keys` with Start→KEY_ENTER.
 
 ## Comparing runners / prefixes
