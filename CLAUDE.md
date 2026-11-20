@@ -65,6 +65,8 @@ Don't edit `tools/run.sh` while slots are running.
 - Another session may run its own headless gamescope (windowsarcadeloader tests): if a slot's screenshots show a foreign game, its display number collides; rerun in another slot.
 - Unity resolution dialog / "Full screen?" box at start → `.keys` with Start→KEY_ENTER.
 
+- Slime Changer: inspect shipped `*_BackUpThisFolder_ButDontShipItWithYourGame/il2cppOutput/` before decompiling; this build includes generated C++ and PDBs. Runtime loads Steam, not the bundled STOVE SDKs. Startup blocks on PlayFab login/hash verification. `python3 tools/slime_local_patch.py "<prefix>/game/GameAssembly.dll" patch --prefix "<prefix>"` selects the existing local-save path and disables the cloud-upload coroutine (exact build hashes, `.orig` preserved). Seed missing SlimeChanger.json with a GetUserDataResult containing `Data.PlayerData.Value` = serialized `{"dataList":[]}`; an empty Data dictionary initializes gameplay but cannot persist changes. Existing saves are preserved. Local saving remains in DataManager.bea.
+
 ## Comparing runners / prefixes
 
 - `WC_RUNNER=<runner dir>` picks another runner for run.sh/fullscan.sh (vanilla wine, Kron4ek builds in `~/.cache/wsquashfsconverter/runners`).
@@ -76,6 +78,8 @@ Don't edit `tools/run.sh` while slots are running.
 - `tools/fullscan.sh <list>` (OUT=file) scans a list in rounds of 8; `tools/desktop.sh "<game>"` shows a game on the real desktop for the user.
 
 ## Known open groups (todo.tsv)
+
+- Scott Pilgrim follow-up (2026-11-20): native dbdata/voices38 overrides still fail on GE11-12. First observed AV is in Scott.exe RVA0xd6e2ff6 writing to unmapped address0x1307f8; recursive RtlVirtualUnwind2 failures follow. Independent Wine11.22-staging instead faults in ntdll heap_allocate_block+0x746 writing into read-only Scott.exe data. No game or Wine binary patch; deferred for further protected-executable analysis. Evidence in pack4/.wineconvert/work/handoff-slime-scott/.
 
 WEBVIEW2 runtime, chromium-black (NW.js/Electron), black screen with audio, input ignored, VIDEO (MF `0xc00d36bb`),
 TRICK (physx, openal, d3dcompiler_47), Steam DRM / cracks / Steam emulators / GDK (now allowed to work on).
