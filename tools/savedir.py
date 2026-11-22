@@ -5,9 +5,9 @@ import os, re, sys
 
 U = 'drive_c/users/steamuser/'
 NOISE = re.compile(r'(^|/)(dxvk|vkd3d|D3DSCache|mesa_shader_cache|GPUCache|ShaderCache|GrShaderCache|Code Cache|'
-                   r'Crashpad|CrashDumps|CrashReports?|[^/]*Crash Reporter|sentry|NVIDIA|Microsoft|GOG\.com|cache|Cache|logs?|Logs?|Temp|temp|'
+                   r'Crashpad|CrashDumps|CrashReports?|[^/]*Crash Reporter|sentry|NVIDIA|Microsoft|GOG\.com|StreamingAssets|CrashReportClient|[^/]*_Data/Plugins|cache|Cache|logs?|Logs?|Temp|temp|'
                    r'Unity/[0-9a-f-]{36}|Analytics|webcache|EBWebView|nw[0-9_]+|\.cache)(/|$)')
-NOISEFILE = re.compile(r'(__sentry[^/]*|achievements\.(ini|json)|leaderboards\.ini|stats\.(ini|bin|json)|configs\.[a-z]+\.ini|account_name\.txt|user_steam_id\.txt|language\.txt|\.log|\.dmp|\.tmp|output_log\.txt|Player(-prev)?\.log|\.lock|LOCK|\.ldb|CURRENT|MANIFEST.*|LOG(\.old)?)$', re.I)
+NOISEFILE = re.compile(r'(__sentry[^/]*|listen_port\.txt|achiev\.ini|ldb\.ini|CrashReportClient\.ini|vkd3d-proton\.cache.*|achievements\.(ini|json)|leaderboards\.ini|stats\.(ini|bin|json)|configs\.[a-z]+\.ini|account_name\.txt|user_steam_id\.txt|language\.txt|\.log|\.dmp|\.tmp|output_log\.txt|Player(-prev)?\.log|\.lock|LOCK|\.ldb|CURRENT|MANIFEST.*|LOG(\.old)?)$', re.I)
 SAVELIKE = re.compile(r'(sav|save|slot|profile|progress|persistent|record|\.dat$|\.json$|\.bin$|remote/)', re.I)
 
 
@@ -30,6 +30,15 @@ def rel_root(path):
     m = re.match(r'drive_c/users/Public/Documents/Steam/(RUNE|CODEX|OnlineFix|EMPRESS)/([^/]+)/', p)
     if m:
         return f'drive_c/users/Public/Documents/Steam/{m.group(1)}/{m.group(2)}', 'steamemu'
+    m = re.match(re.escape(U) + r'Documents/([^/]+)/([0-9]+)/SteamEmu/', p)
+    if m:
+        return U + f'Documents/{m.group(1)}/{m.group(2)}', 'steamemu'
+    m = re.match(r'(game/(?:.*/)?SteamEmu)/', p)
+    if m:
+        return m.group(1), 'steamemu'
+    m = re.match(r'(game/(?:.*/)?Saved)/', p)
+    if m:
+        return m.group(1), 'unreal'
     m = re.match(re.escape(U) + r'(Documents/My Games|Documents/Saved Games|Saved Games|Documents)/([^/]+)/', p)
     if m:
         return U + f'{m.group(1)}/{m.group(2)}', 'documents'
@@ -61,9 +70,15 @@ def main():
     if not groups:
         for p in lines:
             root, rule = rel_root(p)
-            if rule in ('unity', 'godot'):
+            if rule in ('unity', 'godot', 'unreal'):
                 print(f'SAVEDIR={root}')
                 print(f'# confidence medium: {rule} data folder created (only logs so far)')
+                return
+        for p in lines:
+            root, rule = rel_root(p)
+            if rule == 'steamemu' and not p.endswith('listen_port.txt') and '/settings/' not in p:
+                print(f'SAVEDIR={root}')
+                print('# confidence low: only the Steam emulator folder was written (cloud saves land there)')
                 return
         print('# confidence none: no save-like file created')
         return
