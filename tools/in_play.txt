@@ -1,0 +1,15 @@
+sleep 15000
+tap a 250
+sleep 4000
+tap a 250
+sleep 4000
+tap a 250
+sleep 4000
+tap a 250
+sleep 8000
+tap a 250
+sleep 8000
+tap a 250
+sleep 30000
+tap start 250
+sleep 10000
