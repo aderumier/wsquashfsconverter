@@ -100,6 +100,8 @@ while (( t < DUR )); do
   if (( t == 30 )); then sid=$(pactl list short sinks | awk -v n=$SINK '$2==n{print $1}'); echo "streams: $(pactl list short sink-inputs | awk -v s=$sid '$2==s' | wc -l)"; fi
   kill -0 $GSPID 2>/dev/null || { echo "exited at $t"; break; }
 done
+# files the run created (for SAVEDIR/SAVEFILES): skip wine's own dirs and temp files
+find $O/upper -type f ! -path '*/drive_c/windows/*' ! -path '*/AppData/Local/Temp/*' ! -path '*/Temp/*' ! -name '*.reg' ! -path '*/.update-timestamp' -printf '%P\t%s\n' 2>/dev/null | sort > "$S/upper$K.txt"
 rm -rf "${O:?}/glogs"; mkdir -p $O/glogs; find $O/upper \( -iname "*.log" -o -iname "*log*.txt" -o -iname "${GLOGX:-__none__}" \) -size -5M -exec cp {} $O/glogs/ \; 2>/dev/null
 exec 7>&-
 K=$K "$T/stop.sh"
