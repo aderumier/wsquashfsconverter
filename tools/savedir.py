@@ -5,7 +5,7 @@ import os, re, sys
 
 U = 'drive_c/users/steamuser/'
 NOISE = re.compile(r'(^|/)(dxvk|vkd3d|D3DSCache|mesa_shader_cache|GPUCache|ShaderCache|GrShaderCache|Code Cache|'
-                   r'Crashpad|CrashDumps|CrashReports?|[^/]*Crash Reporter|sentry|NVIDIA|Microsoft|cache|Cache|logs?|Logs?|Temp|temp|'
+                   r'Crashpad|CrashDumps|CrashReports?|[^/]*Crash Reporter|sentry|NVIDIA|Microsoft|GOG\.com|cache|Cache|logs?|Logs?|Temp|temp|'
                    r'Unity/[0-9a-f-]{36}|Analytics|webcache|EBWebView|nw[0-9_]+|\.cache)(/|$)')
 NOISEFILE = re.compile(r'(__sentry[^/]*|achievements\.(ini|json)|leaderboards\.ini|stats\.(ini|bin|json)|configs\.[a-z]+\.ini|account_name\.txt|user_steam_id\.txt|language\.txt|\.log|\.dmp|\.tmp|output_log\.txt|Player(-prev)?\.log|\.lock|LOCK|\.ldb|CURRENT|MANIFEST.*|LOG(\.old)?)$', re.I)
 SAVELIKE = re.compile(r'(sav|save|slot|profile|progress|persistent|record|\.dat$|\.json$|\.bin$|remote/)', re.I)
@@ -54,6 +54,9 @@ def main():
         g = groups.setdefault(root, {'rule': rule, 'files': [], 'score': 0})
         g['files'].append(p)
         g['score'] += 3 if SAVELIKE.search(p) else 1
+    # many files dropped among game data (extracted levels, assets) are not saves
+    for r in [r for r, g in groups.items() if g['rule'] == 'gamedir' and len(g['files']) > 6]:
+        del groups[r]
     # a Unity folder that only got its Player.log still is the persistentDataPath
     if not groups:
         for p in lines:
@@ -67,8 +70,14 @@ def main():
     pref = {'godot': 4, 'unreal': 4, 'unity': 3, 'documents': 3, 'appdata': 2, 'gamedir': 2, 'steamemu': 1}
     best = max(groups.items(), key=lambda kv: (kv[1]['score'] * 10 + pref[kv[1]['rule']]))
     root, g = best
+    # descend into a single publisher subfolder (Saved Games/Nightdive Studios/Blood EX)
+    while True:
+        subs = {f[len(root) + 1:].split('/')[0] for f in g['files'] if '/' in f[len(root) + 1:]}
+        if g['rule'] not in ('documents', 'appdata') or len(subs) != 1 or any('/' not in f[len(root) + 1:] for f in g['files']):
+            break
+        root = root + '/' + subs.pop()
     print(f'SAVEDIR={root}')
-    if g['rule'] == 'gamedir' and not re.search(r'sav', os.path.basename(root), re.I):
+    if g['rule'] == 'gamedir' and not re.search(r'sav|steamdata|userdata', os.path.basename(root), re.I):
         names = sorted({p[len(root) + 1:] for p in g['files'] if '/' not in p[len(root) + 1:]})
         if names:
             print('SAVEFILES=' + ';'.join(names))

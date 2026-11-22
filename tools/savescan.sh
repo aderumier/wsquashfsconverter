@@ -32,6 +32,11 @@ for g in "${todo[@]}"; do
   out=$(python3 -I "$T/savedir.py" "$S/upper_$(echo "$g" | tr ' /' '__').txt")
   conf=$(echo "$out" | grep '^# confidence' | sed 's/^# confidence //')
   lines=$(echo "$out" | grep -E '^SAVE(DIR|FILES)=')
+  # nothing written yet: an existing save folder shipped with the game (game/Save, game/Saves)
+  if [[ -z "$lines" ]]; then
+    d=$(cd "$g.wine" && find game -maxdepth 3 -type d -iregex '.*/save[sd]?\(ata\|games?\)?' | head -1)
+    [[ -n "$d" ]] && { lines="SAVEDIR=$d"; conf="medium: existing save folder in the game"; }
+  fi
   if [[ -n "$lines" ]]; then
     A="$g.wine/autorun.cmd"
     { tr -d '\r' < "$A" | grep -vE '^SAVE(DIR|FILES)='; echo "$lines"; } > "$A.new" && mv "$A.new" "$A"
