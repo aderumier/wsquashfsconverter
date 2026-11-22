@@ -2,7 +2,7 @@
 import os, sys, ntpath
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from lnk import parse
-root = os.environ.get('WC_PACK', '/mnt/test/pack4')
+root = os.environ.get('WC_PACK', os.getcwd())
 game, entry = sys.argv[1], sys.argv[2]
 gdir = os.path.join(root, game)
 p = os.path.normpath(os.path.join(root, entry))

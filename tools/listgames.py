@@ -1,6 +1,6 @@
 # list game folders with their gamelist entries: visible|total|folder|entries (" ; " separated)
 import re, os, sys, collections, html
-P = os.environ.get('WC_PACK', '/mnt/test/pack4')
+P = os.environ.get('WC_PACK', os.getcwd())
 src = P + '/gamelist.xml.orig' if os.path.exists(P + '/gamelist.xml.orig') else P + '/gamelist.xml'
 txt = open(src, encoding='utf-8').read()
 by = collections.defaultdict(list)

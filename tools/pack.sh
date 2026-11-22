@@ -16,4 +16,4 @@ rm -rf "${P:?}/${G:?}.wine"
 printf '%s\t%s\tok\t%s\n' "$G" "$E" "$N" >> $P/.wineconvert/done.tsv
 python3 -I $T/gamelist.py
 ls -la "$F" | awk '{print $5}'
-df -h /mnt/test | tail -1 | awk '{print "free " $4}'
+df -h "$P" | tail -1 | awk '{print "free " $4}'

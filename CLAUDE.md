@@ -27,6 +27,25 @@ Don't edit `tools/run.sh` while slots are running.
 - Keep token use low: review the small contact sheets, not full screenshots; filter logs.
 - Commits: author `Alexandre Derumier <aderumier@gmail.com>`, no Co-Authored-By trailer.
 
+## Working method (learned the hard way)
+
+- A label is a hypothesis, not a stopping point: "DRM", "crack", "needs user files", "arcade dump", "blocked upstream" were wrong several times (Slime Changer, Geppy-X, Chromium/WebView2 groups). Follow the failing code path (logs, gdb on the failing branch, disassembly, IL2CPP metadata, readable JS/package.json) until the actual failing check is found; only then stop, saying what is proven and what is guessed.
+- Headless captures lie sometimes (very dark frames, tiny windows, hex-box fonts, black Chromium/composited windows): use `-auto-level`, then `tools/desktop.sh` and ask the user before chasing a visual bug.
+- Input: the virtual pad works for XInput games, but Unity's new InputSystem ignores it and keyboard/mouse games look dead headless; run `tools/in_kbd.txt` / click scripts before asking, and let the user confirm on the desktop.
+- Rendering bugs (shader errors, black 3D, effect failures): try native compilers early (`trick.sh d3dcompiler_47`, `d3dx9_43 d3dcompiler_43`, matching `d3dcompiler_4x`).
+- A launcher, .bat, editor or config tool as the entry: test the real game exe as CMD early.
+- Never edit run.sh while slots run; 8 slots, pack/defer the whole round before the next one (overlapping rounds starved the games).
+- DRM, cracks, Steam/GOG emulators and GDK builds are in scope (the old "no DRM" rule is gone); ask the user before patching a DRM check itself.
+- Keep a `.orig` of every patched file; keep fixes inside the image (game/, prefix registry via trick.sh, autorun ENV).
+
+## Running this from another session or machine
+
+Everything a new Claude Code session needs is in this file and README.md; per-user Claude memory is not shared, so durable lessons belong here.
+- Point the tools at a pack with `WC_PACK=<pack folder>` (it must contain gamelist.xml; generate one with tools/mkgamelist.py) and at a runner with `WC_RUNNER=<GE-Proton dir>` (default: ~/code/windowsarcadeloader/wine-runners/GE-Proton11-12-x86_64).
+- The machine needs: gamescope, bwrap, squashfs-tools, ImageMagick, xdotool, mingw-w64 (x86_64/i686), the host lib32 audio/video packages, passwordless sudo for the overlay mounts in run.sh, and `kernel.yama.ptrace_scope=0` for gdb attach.
+- Caches used by fixes (not in git): ~/.cache/wsquashfsconverter/{gbe,steamless,webview2/fixed,nwjs,runners}.
+- Start a session with: read this file and README.md, `tools/setup.sh`, `tools/batch.sh 8`, review `work/reviewA.jpg`/`reviewB.jpg`, then pack/fix/defer per game; finish with the todo.tsv groups.
+
 ## Prefix tricks
 
 `tools/trick.sh "<game>" <verb>...` preps the game if needed and runs the runner's winetricks on the real `.wine` (kept in the image), e.g. `physx`, `openal`, `d3dcompiler_47`.

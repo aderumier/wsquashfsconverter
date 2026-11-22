@@ -1,6 +1,6 @@
 # rebuild gamelist.xml from gamelist.xml.orig: packed games -> ./X.wsquashfs, dontconvert games -> dontconvert/gamelist.xml
 import re, os, html
-P = os.environ.get('WC_PACK', '/mnt/test/pack4')
+P = os.environ.get('WC_PACK', os.getcwd())
 txt = open(P + '/gamelist.xml.orig', encoding='utf-8').read()
 main = {}
 for l in open(P + '/.wineconvert/done.tsv', encoding='utf-8'):
