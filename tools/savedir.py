@@ -5,9 +5,9 @@ import os, re, sys
 
 U = 'drive_c/users/steamuser/'
 NOISE = re.compile(r'(^|/)(dxvk|vkd3d|D3DSCache|mesa_shader_cache|GPUCache|ShaderCache|GrShaderCache|Code Cache|'
-                   r'Crashpad|CrashDumps|CrashReports?|[^/]*Crash Reporter|sentry|NVIDIA|Microsoft|GOG\.com|StreamingAssets|CrashReportClient|[^/]*_Data/Plugins|cache|Cache|logs?|Logs?|Temp|temp|'
+                   r'Crashpad|CrashDumps|CrashReports?|[^/]*Crash Reporter|sentry|NVIDIA|Microsoft|GOG\.com|StreamingAssets|CrashReportClient|winbackup|[0-9]+/stats|[^/]*_Data/Plugins|cache|Cache|logs?|Logs?|Temp|temp|'
                    r'Unity/[0-9a-f-]{36}|Analytics|webcache|EBWebView|nw[0-9_]+|\.cache)(/|$)')
-NOISEFILE = re.compile(r'(__sentry[^/]*|steam_appid\.txt|listen_port\.txt|achiev\.ini|ldb\.ini|CrashReportClient\.ini|vkd3d-proton\.cache.*|achievements\.(ini|json)|leaderboards\.ini|stats\.(ini|bin|json)|configs\.[a-z]+\.ini|account_name\.txt|user_steam_id\.txt|language\.txt|\.log|\.dmp|\.tmp|output_log\.txt|Player(-prev)?\.log|\.lock|LOCK|\.ldb|CURRENT|MANIFEST.*|LOG(\.old)?)$', re.I)
+NOISEFILE = re.compile(r'(__sentry[^/]*|[^/]*log\.(txt|html)|ds\.ini|[^/]*ShaderCache[^/]*|steam_appid\.txt|listen_port\.txt|achiev\.ini|ldb\.ini|CrashReportClient\.ini|vkd3d-proton\.cache.*|achievements\.(ini|json)|leaderboards\.ini|stats\.(ini|bin|json)|configs\.[a-z]+\.ini|account_name\.txt|user_steam_id\.txt|language\.txt|\.log|\.dmp|\.tmp|output_log\.txt|Player(-prev)?\.log|\.lock|LOCK|\.ldb|CURRENT|MANIFEST.*|LOG(\.old)?)$', re.I)
 SAVELIKE = re.compile(r'(sav|save|slot|profile|progress|persistent|record|\.dat$|\.json$|\.bin$|remote/)', re.I)
 
 
@@ -88,11 +88,12 @@ def main():
     # descend into a single publisher subfolder (Saved Games/Nightdive Studios/Blood EX)
     while True:
         subs = {f[len(root) + 1:].split('/')[0] for f in g['files'] if '/' in f[len(root) + 1:]}
-        if g['rule'] not in ('documents', 'appdata') or len(subs) != 1 or any('/' not in f[len(root) + 1:] for f in g['files']):
+        if g['rule'] not in ('documents', 'appdata') or len(subs) != 1 or any('/' not in f[len(root) + 1:] for f in g['files']) \
+                or re.search(r'[0-9]{5}', next(iter(subs))):  # keep per-user id folders inside SAVEDIR
             break
         root = root + '/' + subs.pop()
     print(f'SAVEDIR={root}')
-    if g['rule'] == 'gamedir' and not re.search(r'sav|steamdata|userdata', os.path.basename(root), re.I):
+    if g['rule'] == 'gamedir' and not re.search(r'sav|steamdata|userdata|cloud', os.path.basename(root), re.I):
         names = sorted({p[len(root) + 1:] for p in g['files'] if '/' not in p[len(root) + 1:]})
         if names:
             print('SAVEFILES=' + ';'.join(names))
