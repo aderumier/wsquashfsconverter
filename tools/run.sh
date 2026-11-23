@@ -65,7 +65,7 @@ cat > $O/launch.sh <<EOS
 cd "$PFX/$DIR" || exit 1
 export WINEPREFIX="$PFX" WINEDEBUG="${WDEBUG:-err+all}" DXVK_LOG_LEVEL=${DXVK_LOG:-none} WINE_ENABLE_HIDRAW=0 WINE_FULLSCREEN_FSR=0
 export WINE_MONO_OVERRIDES="Microsoft.Xna.Framework.*,Gac=n" WINE_ALLOW_XIM=0 DXVK_ASYNC=1 DXVK_STATE_CACHE=0 STAGING_SHARED_MEMORY=1
-export WINEDLLOVERRIDES="winemenubuilder.exe=;$OVR;nvapi64,nvapi=${FULLOVR:+;$FULLOVR}"
+export WINEDLLOVERRIDES="winemenubuilder.exe=;$OVR;nvapi64,nvapi=;lsteamclient=d${FULLOVR:+;$FULLOVR}"
 export PULSE_SINK=$SINK
 export LD_LIBRARY_PATH="/usr/lib32:$R/lib/wine/i386-unix:/usr/lib:$R/lib/wine/x86_64-unix:$R/lib/x86_64-linux-gnu:$R/lib/i386-linux-gnu"
 export WINEDLLPATH="$R/lib/wine/i386-windows:$R/lib/wine/x86_64-windows" PATH="$R/bin:\$PATH" WINEDISABLEFASTSYNC=0 LC_ALL=en_US.UTF-8 LANGUAGE=en_US VKD3D_DEBUG=none
