@@ -7,7 +7,7 @@ U = 'drive_c/users/steamuser/'
 NOISE = re.compile(r'(^|/)(dxvk|vkd3d|D3DSCache|mesa_shader_cache|GPUCache|ShaderCache|shader_cache|mod\.io|GrShaderCache|Code Cache|'
                    r'Crashpad|CrashDumps|CrashReports?|Crashes|[^/]*Crash Reporter|sentry|NVIDIA|Microsoft|GOG\.com|StreamingAssets|CrashReportClient|winbackup|[0-9]+/stats|[^/]*_Data/Plugins|cache|Cache|logs?|Logs?|Temp|temp|'
                    r'Unity/[0-9a-f-]{36}|Analytics|webcache|EBWebView|nw[0-9_]+|\.cache)(/|$)')
-NOISEFILE = re.compile(r'(__sentry[^/]*|logger-data[^/]*\.db|[a-z]*list[0-9]*\.txt|shader-error\.txt|[^/]*log\.(txt|html)|ds\.ini|[^/]*ShaderCache[^/]*|steam_appid\.txt|listen_port\.txt|achiev\.ini|ldb\.ini|CrashReportClient\.ini|vkd3d-proton\.cache.*|achievements\.(ini|json)|leaderboards\.ini|stats\.(ini|bin|json)|configs\.[a-z]+\.ini|account_name\.txt|user_steam_id\.txt|language\.txt|\.log|\.dmp|\.tmp|output_log\.txt|Player(-prev)?\.log|\.lock|LOCK|\.ldb|CURRENT|MANIFEST.*|LOG(\.old)?)$', re.I)
+NOISEFILE = re.compile(r'(__sentry[^/]*|logger-data[^/]*\.db|[a-z]*list[0-9]*\.txt|shader-error\.txt|[^/]*log\.(txt|html)|ds\.ini|[^/]*ShaderCache[^/]*|steam_appid\.txt|listen_port\.txt|achiev\.ini|ldb\.ini|CrashReportClient\.ini|vkd3d-proton\.cache.*|achievements\.(ini|json)|leaderboards\.ini|stats\.(ini|bin|json)|configs\.[a-z]+\.ini|account_name\.txt|user_steam_id\.txt|language\.txt|\.log|\.dmp|\.dll|\.exe|\.tmp|output_log\.txt|Player(-prev)?\.log|\.lock|LOCK|\.ldb|CURRENT|MANIFEST.*|LOG(\.old)?)$', re.I)
 SAVELIKE = re.compile(r'(sav|save|slot|profile|progress|persistent|record|\.dat$|\.json$|\.bin$|remote/)', re.I)
 
 
