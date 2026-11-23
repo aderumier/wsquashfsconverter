@@ -38,7 +38,14 @@ else
   ln -sf $R/lib/wine/vkd3d-proton/i386-windows/{d3d12,d3d12core}.dll $W64
   OVR="dxgi,d3d8,d3d9,d3d10core,d3d11,d3d12,d3d12core=n"
 fi
-ln -sf $R/lib/wine/i386-windows/ddraw.dll $W64/ddraw.dll
+if [[ "${D7VK:-0}" = 1 ]]; then
+  # like batocera's per-game d7vk=1: D7VK ddraw, wine's ddraw next to it as ddraw_.dll for 2D calls
+  ln -sf $R/lib/wine/d7vk/i386-windows/ddraw.dll $W64/ddraw.dll
+  ln -sf $R/lib/wine/i386-windows/ddraw.dll $W64/ddraw_.dll
+  OVR="$OVR;ddraw=n,b"
+else
+  ln -sf $R/lib/wine/i386-windows/ddraw.dll $W64/ddraw.dll
+fi
 FULLOVR=""
 if [[ "${FULL:-0}" = 1 ]]; then
   # like the loader: its isolated tricks stay builtin unless asked (DSOUND=1 keeps the native dsound for sound problems),
@@ -65,7 +72,7 @@ cat > $O/launch.sh <<EOS
 cd "$PFX/$DIR" || exit 1
 export WINEPREFIX="$PFX" WINEDEBUG="${WDEBUG:-err+all}" DXVK_LOG_LEVEL=${DXVK_LOG:-none} WINE_ENABLE_HIDRAW=0 WINE_FULLSCREEN_FSR=0
 export WINE_MONO_OVERRIDES="Microsoft.Xna.Framework.*,Gac=n" WINE_ALLOW_XIM=0 DXVK_ASYNC=1 DXVK_STATE_CACHE=0 STAGING_SHARED_MEMORY=1
-export WINEDLLOVERRIDES="winemenubuilder.exe=;$OVR;nvapi64,nvapi=;lsteamclient=d${FULLOVR:+;$FULLOVR}"
+export WINEDLLOVERRIDES="winemenubuilder.exe=;$OVR;nvapi64,nvapi=${FULLOVR:+;$FULLOVR}"
 export PULSE_SINK=$SINK
 export LD_LIBRARY_PATH="/usr/lib32:$R/lib/wine/i386-unix:/usr/lib:$R/lib/wine/x86_64-unix:$R/lib/x86_64-linux-gnu:$R/lib/i386-linux-gnu"
 export WINEDLLPATH="$R/lib/wine/i386-windows:$R/lib/wine/x86_64-windows" PATH="$R/bin:\$PATH" WINEDISABLEFASTSYNC=0 LC_ALL=en_US.UTF-8 LANGUAGE=en_US VKD3D_DEBUG=none

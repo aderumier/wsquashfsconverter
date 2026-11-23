@@ -19,7 +19,7 @@ Every game is test-launched headless, with a virtual Xbox pad, before it is pack
 
 ## Requirements
 
-- GE-Proton runner: `~/code/windowsarcadeloader/wine-runners/GE-Proton11-12-x86_64` (override with `WC_RUNNER`).
+- GE-Proton runner: `~/code/windowsarcadeloader/wine-runners/GE-Proton11-14-x86_64` (override with `WC_RUNNER`).
 - Passwordless `sudo` (overlay mounts and `/dev/uinput` for the virtual pad).
 - `gamescope`, `bwrap`, `xdotool`, `pactl`/`parec`, ImageMagick (`magick`, `montage`), `mksquashfs`/`unsquashfs`, `gcc`.
 - 32-bit host libraries, or 32-bit games test silent: `sudo pacman -S --needed lib32-libpulse lib32-libva lib32-libusb`.
@@ -67,6 +67,7 @@ Single game, or a different input script / duration:
 ```sh
 K=3 IN=tools/in_key.txt DUR=90 ./next.sh "<game>"   # K = slot number (1..16)
 NODXVK=1 ./next.sh "<game>"                         # test with wine's own d3d (wined3d) instead of DXVK
+D7VK=1 ./next.sh "<game>"                          # D3D7/ddraw game with D7VK, like batocera's per-game d7vk=1 setting
 WDEBUG="err+all,+loaddll" K=1 ./run.sh "<game>" 30  # raw run with a custom WINEDEBUG
 ```
 

@@ -41,7 +41,7 @@ Don't edit `tools/run.sh` while slots are running.
 ## Running this from another session or machine
 
 Everything a new Claude Code session needs is in this file and README.md; per-user Claude memory is not shared, so durable lessons belong here.
-- Point the tools at a pack with `WC_PACK=<pack folder>` (it must contain gamelist.xml; generate one with tools/mkgamelist.py) and at a runner with `WC_RUNNER=<GE-Proton dir>` (default: ~/code/windowsarcadeloader/wine-runners/GE-Proton11-12-x86_64).
+- Point the tools at a pack with `WC_PACK=<pack folder>` (it must contain gamelist.xml; generate one with tools/mkgamelist.py) and at a runner with `WC_RUNNER=<GE-Proton dir>` (default: ~/code/windowsarcadeloader/wine-runners/GE-Proton11-14-x86_64).
 - The machine needs: gamescope, bwrap, squashfs-tools, ImageMagick, xdotool, mingw-w64 (x86_64/i686), the host lib32 audio/video packages, passwordless sudo for the overlay mounts in run.sh, and `kernel.yama.ptrace_scope=0` for gdb attach.
 - Caches used by fixes (not in git): ~/.cache/wsquashfsconverter/{gbe,steamless,webview2/fixed,nwjs,runners}.
 - Start a session with: read this file and README.md, `tools/setup.sh`, `tools/batch.sh 8`, review `work/reviewA.jpg`/`reviewB.jpg`, then pack/fix/defer per game; finish with the todo.tsv groups.
