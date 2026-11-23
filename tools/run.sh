@@ -38,8 +38,15 @@ else
   ln -sf $R/lib/wine/vkd3d-proton/i386-windows/{d3d12,d3d12core}.dll $W64
   OVR="dxgi,d3d8,d3d9,d3d10core,d3d11,d3d12,d3d12core=n"
 fi
-if [[ "${D7VK:-0}" = 1 ]]; then
-  # like batocera's per-game d7vk=1: D7VK ddraw, wine's ddraw next to it as ddraw_.dll for 2D calls
+# like batocera-wine on GE: D7VK and d8vk by default, unless the image's autorun.cmd says PROTON_NO_D7VK=1 / PROTON_NO_D8VK=1
+NOD7=$(tr -d '\r' < $PFX/autorun.cmd | sed -n 's/^PROTON_NO_D7VK=//p' | head -1)
+NOD8=$(tr -d '\r' < $PFX/autorun.cmd | sed -n 's/^PROTON_NO_D8VK=//p' | head -1)
+if [[ "${NODXVK:-0}" != 1 && "${NOD8:-0}" = 1 ]]; then
+  ln -sf $R/lib/wine/x86_64-windows/d3d8.dll $S32; ln -sf $R/lib/wine/i386-windows/d3d8.dll $W64
+  OVR="dxgi,d3d9,d3d10core,d3d11,d3d12,d3d12core=n;d3d8=b"
+fi
+if [[ "${NOD7:-0}" != 1 && -e $R/lib/wine/d7vk/i386-windows/ddraw.dll ]]; then
+  # D7VK ddraw, wine's ddraw next to it as ddraw_.dll for 2D calls
   ln -sf $R/lib/wine/d7vk/i386-windows/ddraw.dll $W64/ddraw.dll
   ln -sf $R/lib/wine/i386-windows/ddraw.dll $W64/ddraw_.dll
   OVR="$OVR;ddraw=n,b"

@@ -67,7 +67,7 @@ Single game, or a different input script / duration:
 ```sh
 K=3 IN=tools/in_key.txt DUR=90 ./next.sh "<game>"   # K = slot number (1..16)
 NODXVK=1 ./next.sh "<game>"                         # test with wine's own d3d (wined3d) instead of DXVK
-D7VK=1 ./next.sh "<game>"                          # D3D7/ddraw game with D7VK, like batocera's per-game d7vk=1 setting
+PROTON_NO_D7VK=1 / PROTON_NO_D8VK=1 in autorun.cmd   # D7VK (ddraw) and d8vk (d3d8) are on by default with GE, like batocera-wine; these lines turn them off for one game
 WDEBUG="err+all,+loaddll" K=1 ./run.sh "<game>" 30  # raw run with a custom WINEDEBUG
 ```
 
