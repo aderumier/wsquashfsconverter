@@ -85,16 +85,25 @@ def main():
     pref = {'godot': 4, 'unreal': 4, 'unity': 3, 'documents': 3, 'appdata': 2, 'gamedir': 2, 'steamemu': 1}
     best = max(groups.items(), key=lambda kv: (kv[1]['score'] * 10 + pref[kv[1]['rule']]))
     root, g = best
+    if g['rule'] == 'gamedir':
+        # link a whole save-like ancestor (game/Profile/PLAYER/Stats -> game/Profile, game/Save/<id> -> game/Save)
+        parts = root.split('/')
+        for i in range(1, len(parts)):
+            if re.search(r'^(save|saves|savegames?|savedata|profiles?|cloud|steamdata|userdata)$', parts[i], re.I):
+                root = '/'.join(parts[:i + 1])
+                break
+    descend = 0
     # descend into a single publisher subfolder (Saved Games/Nightdive Studios/Blood EX)
     while True:
         subs = {f[len(root) + 1:].split('/')[0] for f in g['files'] if '/' in f[len(root) + 1:]}
         if g['rule'] not in ('documents', 'appdata') or len(subs) != 1 or any('/' not in f[len(root) + 1:] for f in g['files']) \
-                or re.search(r'[0-9]{5}', next(iter(subs))):  # keep per-user id folders inside SAVEDIR
+                or re.search(r'[0-9]{5}', next(iter(subs))) or descend:  # keep per-user id folders inside SAVEDIR; one level only
             break
         root = root + '/' + subs.pop()
+        descend += 1
     print(f'SAVEDIR={root}')
-    if g['rule'] == 'gamedir' and not re.search(r'sav|steamdata|userdata|cloud', os.path.basename(root), re.I):
-        names = sorted({p[len(root) + 1:] for p in g['files'] if '/' not in p[len(root) + 1:]})
+    if g['rule'] == 'gamedir' and not re.search(r'sav|steamdata|userdata|cloud|profile', os.path.basename(root), re.I):
+        names = sorted({p[len(root) + 1:] for p in g['files'] if p.startswith(root + '/') and '/' not in p[len(root) + 1:]})
         if names:
             print('SAVEFILES=' + ';'.join(names))
     conf = 'high' if g['score'] >= 3 and g['rule'] != 'steamemu' else 'medium'

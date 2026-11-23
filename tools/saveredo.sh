@@ -5,7 +5,7 @@ LOG="$S/savescan.tsv"; cd "$P"
 redo=()
 while IFS=$'\t' read -r g res old conf; do
   [[ "$res" == added || "$res" == none ]] || continue
-  [[ "$conf" == *"by hand"* || "$conf" == *"exe strings"* ]] && continue
+  [[ "$conf" == *"by hand"* || "$conf" == *"exe strings"* || "$conf" == *"existing save folder"* ]] && continue
   u="$S/upper_$(echo "$g" | tr ' /' '__').txt"; [[ -f "$u" ]] || continue
   out=$(python3 -I "$T/savedir.py" "$u"); lines=$(echo "$out" | grep -E '^SAVE(DIR|FILES)=' | tr '\n' ' ')
   [[ "${lines% }" == "${old% }" ]] && continue
