@@ -51,6 +51,38 @@ def rel_root(path):
     return None, None
 
 
+def engine_fallback(wine):
+    """nothing written during the run: the engine's standard save folder, from the game files"""
+    import struct
+    game = os.path.join(wine, 'game')
+    files = []  # os.walk never follows symlinks (a stray dosdevices/z: -> / inside game/ loops a recursive glob)
+    for dp, dns, fns in os.walk(game):
+        files += [os.path.join(dp, f) for f in fns if f in ('data.win', 'app.info')]
+    for w in [f for f in files if f.endswith('/data.win')]:  # GameMaker: %LOCALAPPDATA%/<GEN8 name>
+        try:
+            d = open(w, 'rb').read()
+            o = d.find(b'GEN8') + 8
+            q = struct.unpack_from('<I', d, o + 40)[0]
+            n = d[q:q + struct.unpack_from('<I', d, q - 4)[0]].decode()
+            if n and re.match(r'^[^/\\:*?"<>|]+$', n):
+                return U + 'AppData/Local/' + n, 'GameMaker data.win name'
+        except Exception:
+            pass
+    for a in [f for f in files if re.search(r'_Data/app\.info$', f)]:  # Unity: LocalLow/<company>/<product>
+        parts = open(a, encoding='utf-8', errors='replace').read().split('\n')[:2]
+        if len(parts) == 2 and all(parts):
+            parts = [re.sub(r'\.$', '_', re.sub(r'[\\/:*?"<>|]', '_', x.strip())) for x in parts]
+            return U + 'AppData/LocalLow/' + '/'.join(parts), 'Unity app.info'
+    for dp, dns, _ in os.walk(game):  # a save folder shipped with the game (game/Save, game/Saves)
+        if dp[len(game):].count('/') >= 3:
+            dns[:] = []
+            continue
+        for dn in dns:
+            if re.match(r'^save[sd]?(ata|games?)?$', dn, re.I):
+                return os.path.relpath(os.path.join(dp, dn), wine), 'existing save folder in the game'
+    return None
+
+
 def main():
     lines = [l.rstrip('\n').split('\t')[0] for l in open(sys.argv[1], encoding='utf-8', errors='replace') if l.strip()]
     groups = {}
@@ -74,6 +106,11 @@ def main():
                 print(f'SAVEDIR={root}')
                 print(f'# confidence medium: {rule} data folder created (only logs so far)')
                 return
+        fb = engine_fallback(sys.argv[2]) if len(sys.argv) > 2 else None
+        if fb:
+            print(f'SAVEDIR={fb[0]}')
+            print(f'# confidence medium: {fb[1]}')
+            return
         for p in lines:
             root, rule = rel_root(p)
             if rule == 'steamemu' and not p.endswith('listen_port.txt') and '/settings/' not in p:

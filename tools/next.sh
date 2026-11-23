@@ -17,7 +17,7 @@ if [[ -z "$G" ]]; then
 fi
 [[ -z "$G" ]] && { echo "ALL DONE"; exit 0; }
 E=$(grep -F "|$G|" $S/games.txt | head -1 | cut -d'|' -f4)
-E=$(sed 's/ ; /\n/g' <<<"$E" | grep -viE 'unins|redist|crash|\.url$|\.bat$|dxsetup|setup' | head -1)
+[[ -f "$P/.wineconvert/autorun/$G.cmd" ]] || E=$(sed 's/ ; /\n/g' <<<"$E" | grep -viE 'unins|redist|crash|\.url$|\.bat$|dxsetup|setup' | head -1)
 echo "SLOT=$K GAME=$G"; echo "ENTRY=$E"
 [[ -z "$E" && ! -d "$P/$G.wine" ]] && { echo "PREP FAILED: no usable gamelist entry (bat/url only?)"; exit 1; }
 if [[ ! -d "$P/$G.wine" ]]; then
@@ -26,4 +26,5 @@ fi
 grep -iqE 'dosbox|scummvm' "$P/$G.wine/autorun.cmd" && echo "WARNING DOSBOX/SCUMMVM"
 cat "$P/$G.wine/autorun.cmd"
 K=$K $T/run.sh "$G" ${DUR:-60} ${IN:-$T/in.txt} 2>&1 | grep -E "^(audio|streams|mean|exited|no shots|UMOUNT|sheet)"
+cp "$S/upper$K.txt" "$S/upper_$(echo "$G" | tr ' /' '__').txt" 2>/dev/null   # files the run created, for pack.sh SAVEDIR
 grep -ihE "exception|error" $P/.wineconvert/ov$K/glogs/* 2>/dev/null | sort | uniq -c | sort -rn | head -3 | cut -c1-150
