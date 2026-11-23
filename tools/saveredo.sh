@@ -15,7 +15,7 @@ while IFS=$'\t' read -r g res old conf; do
   sudo unsquashfs -q -d "$g.wine" "$g.wsquashfs" >/dev/null 2>&1 && sudo chown -R "$(id -u):$(id -g)" "$g.wine"
   A="$g.wine/autorun.cmd"
   { tr -d '\r' < "$A" | grep -vE '^SAVE(DIR|FILES)='; echo "$out" | grep -E '^SAVE(DIR|FILES)='; } > "$A.new" && mv "$A.new" "$A"
-  grep -vF "$g	" "$LOG" > "$LOG.new"; mv "$LOG.new" "$LOG"
+  awk -F"\t" -v g="$g" '$1 != g' "$LOG" > "$LOG.new"; mv "$LOG.new" "$LOG"
   printf '%s\t%s\t%s\t%s\n' "$g" "$([[ -n "$lines" ]] && echo added || echo none)" "$lines" "$(echo "$out" | sed -n 's/^# confidence //p')" >> "$LOG"
   redo+=("$g")
 done < <(cat "$LOG")
