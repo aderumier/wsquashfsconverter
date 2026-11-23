@@ -2,7 +2,8 @@
 # stop.sh: stop slot $K (default 0) game, pad, audio capture, overlay
 . "$(dirname "$0")/env.sh"
 K=${K:-0}; O=$P/.wineconvert/ov$K
-for p in $(pgrep -f "gamescope --backend headless -W"); do grep -q "$O/launch.sh" /proc/$p/cmdline 2>/dev/null && kill $p; done
+gs=$(for p in $(pgrep -f "gamescope --backend headless -W"); do grep -q "$O/launch.sh" /proc/$p/cmdline 2>/dev/null && echo $p; done)
+[[ -n "$gs" ]] && { kill $gs 2>/dev/null; sleep 3; kill -KILL $gs 2>/dev/null; }  # a hung gamescope ignores SIGTERM and leaks the game
 for p in $(pgrep -f "[p]arec -d claude_null$K.monitor"); do kill $p; done
 if mountpoint -q $O/mnt; then
   WINEPREFIX=$O/mnt "$WINESERVER" -k 2>/dev/null; sleep 2
