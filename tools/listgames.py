@@ -11,7 +11,7 @@ for blk in re.findall(r'<game>(.*?)</game>', txt, re.S):
     if not p.startswith('./'): continue
     by[p[2:].split('/')[0]].append(('<hidden>true</hidden>' in blk, p))
 skip = {'media', 'dontconvert'}
-dirs = sorted(d for d in os.listdir(P) if os.path.isdir(P + '/' + d) and d not in skip and not d.startswith('.') and not d.endswith('.wine'))
+dirs = sorted({d[:-5] if d.endswith('.wine') else d for d in os.listdir(P) if os.path.isdir(P + '/' + d) and d not in skip and not d.startswith('.')})  # prepped games (<game>.wine) too
 for d in dirs:
     ents = by.get(d, [])
     vis = [e for e in ents if not e[0]]
