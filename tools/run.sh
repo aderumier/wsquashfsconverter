@@ -99,6 +99,7 @@ if [[ -n "$IN" ]]; then
         sleep) sleep $(awk "BEGIN{print $b/1000}") ;;
         click) DISPLAY=$XD xdotool mousemove $b $c click 1 ;;
         move) DISPLAY=$XD xdotool mousemove $b $c ;;
+        hold) DISPLAY=$XD xdotool mousemove $b $c mousedown 1 sleep 0.2 mouseup 1 ;;
         key) DISPLAY=$XD xdotool key $b ;;
         *) echo "$a $b $c $d" >&7 ;;
       esac
