@@ -16,8 +16,10 @@ for f in "$SRC"/*.wsquashfs; do
   old=$(unsquashfs -cat "$f" autorun.cmd 2>/dev/null | tr -d '\r')
   cmd=$(grep -m1 '^CMD=' <<<"$old"); dir=$(grep -m1 '^DIR=' <<<"$old")
   [[ -n "$cmd" ]] || { echo "$g: no CMD in autorun.cmd, skipped"; printf '%s\t%s\tskipped: no CMD\n' "$g" "$f" >> "$SL"; continue; }
-  sudo unsquashfs -q -d "$P/.import_$g" "$f" game >/dev/null 2>&1 && sudo chown -R "$(id -u):$(id -g)" "$P/.import_$g" \
-    && mv "$P/.import_$g/game" "$P/$g" && rmdir "$P/.import_$g" || { echo "$g: extract failed"; rm -rf "${P:?}/.import_${g:?}"; continue; }
+  # the game folder is game/, or drive_c/game/ in some older images (then the autorun DIR is rewritten to game/)
+  gd=game; [[ "$dir" =~ ^DIR=drive_c/game(/|$) ]] && { gd=drive_c/game; old=$(sed 's|^DIR=drive_c/game|DIR=game|' <<<"$old"); dir=${dir/drive_c\/game/game}; }
+  sudo unsquashfs -q -d "$P/.import_$g" "$f" "$gd" >/dev/null 2>&1 && sudo chown -R "$(id -u):$(id -g)" "$P/.import_$g" \
+    && mv "$P/.import_$g/$gd" "$P/$g" && rm -rf "${P:?}/.import_${g:?}" || { echo "$g: extract failed"; rm -rf "${P:?}/.import_${g:?}"; continue; }
   # a stray wine prefix inside game/ (wineboot run in the wrong folder): junk, and its dosdevices/z: -> / loops scans
   [[ -f "$P/$g/system.reg" && -d "$P/$g/drive_c/windows" ]] && { echo "$g: removing stray prefix from game/"; rm -rf "${P:?}/${g:?}/"{dosdevices,drive_c,system.reg,user.reg,userdef.reg,.update-timestamp}; }
   grep -vE '^(ENV|WINE|DXVK|VKD3D)' <<<"$old" > "$A/$g.cmd"   # old prefix tricks are not carried over
