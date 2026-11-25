@@ -16,8 +16,11 @@ for f in "$SRC"/*.wsquashfs; do
   old=$(unsquashfs -cat "$f" autorun.cmd 2>/dev/null | tr -d '\r')
   cmd=$(grep -m1 '^CMD=' <<<"$old"); dir=$(grep -m1 '^DIR=' <<<"$old")
   [[ -n "$cmd" ]] || { echo "$g: no CMD in autorun.cmd, skipped"; printf '%s\t%s\tskipped: no CMD\n' "$g" "$f" >> "$SL"; continue; }
-  # the game folder is game/, or drive_c/game/ in some older images (then the autorun DIR is rewritten to game/)
-  gd=game; [[ "$dir" =~ ^DIR=drive_c/game(/|$) ]] && { gd=drive_c/game; old=$(sed 's|^DIR=drive_c/game|DIR=game|' <<<"$old"); dir=${dir/drive_c\/game/game}; }
+  # the game folder is game/, or drive_c/<folder>/ in some older images (then the autorun DIR is rewritten to game/)
+  gd=game
+  if [[ "$dir" =~ ^DIR=(drive_c/[^/]+)(/|$) ]]; then
+    gd=${BASH_REMATCH[1]}; old=$(sed "s|^DIR=$gd|DIR=game|" <<<"$old"); dir="DIR=game${dir#DIR=$gd}"
+  fi
   sudo unsquashfs -q -d "$P/.import_$g" "$f" "$gd" >/dev/null 2>&1 && sudo chown -R "$(id -u):$(id -g)" "$P/.import_$g" \
     && mv "$P/.import_$g/$gd" "$P/$g" && rm -rf "${P:?}/.import_${g:?}" || { echo "$g: extract failed"; rm -rf "${P:?}/.import_${g:?}"; continue; }
   # a stray wine prefix inside game/ (wineboot run in the wrong folder): junk, and its dosdevices/z: -> / loops scans
