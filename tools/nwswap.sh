@@ -7,7 +7,7 @@ G="$1"; W="$P/$G.wine"; D="$W/game"; NW=${NWJS:-$HOME/.cache/wsquashfsconverter/
 [[ -e "$D/_nw_orig" ]] && { echo "already swapped" >&2; exit 1; }
 exe=$(tr -d '\r' < "$W/autorun.cmd" | sed -n 's/^CMD="\([^"]*\)".*/\1/p' | head -1)
 mkdir "$D/_nw_orig"
-for f in "$exe" nw.exe nw.dll nw_elf.dll node.dll ffmpeg.dll libEGL.dll libGLESv2.dll d3dcompiler_47.dll d3dcompiler_47.dll.old vk_swiftshader.dll vulkan-1.dll \
+for f in "$exe" nw.exe nw.pak ffmpegsumo.dll nw.dll nw_elf.dll node.dll ffmpeg.dll libEGL.dll libGLESv2.dll d3dcompiler_47.dll d3dcompiler_47.dll.old vk_swiftshader.dll vulkan-1.dll \
          icudtl.dat natives_blob.bin snapshot_blob.bin v8_context_snapshot.bin resources.pak nw_100_percent.pak nw_200_percent.pak notification_helper.exe locales swiftshader; do
   [[ -e "$D/$f" ]] && mv "$D/$f" "$D/_nw_orig/"
 done
