@@ -117,3 +117,5 @@ Everything a new Claude Code session needs is in this file and README.md; per-us
 
 Chromium/WebView2 groups solved 2026-11-22 (see above); black screen with audio, input ignored, VIDEO (MF `0xc00d36bb`),
 TRICK (physx, openal, d3dcompiler_47), Steam DRM / cracks / Steam emulators / GDK (now allowed to work on).
+
+- Unity Addressables "Invalid path in AssetBundleProvider" / "Unable to open archive file" on a non-ASCII bundle name (Pulling No Punches): the old image stored the name mis-encoded (portugu\303\233s); rename the file to the UTF-8 name catalog.json uses.
